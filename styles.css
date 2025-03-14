@@ -1,0 +1,32 @@
+body{
+    display:flex;
+    height: 100vh;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: hsla(0, 0%, 0%, 0.92);
+}
+.container{
+    display:grid;
+    grid-template-columns: repeat(5,1fr);
+    grid-template-rows: repeat(11,1fr);
+    max-width: 500px;
+}
+.cells{
+    border: 2px solid rgba(153, 236, 153, 0.375);
+    text-align:center;
+    box-sizing: border-box;
+    padding: 10px;
+    color: rgba(113, 235, 113, 0.375);
+}
+.dice{
+    display:flex;
+    flex-direction: row;
+    margin: 1rem 0;
+}
+.dicebuttons{
+    padding: 1rem;
+}
+.roll{
+    padding: 1rem;
+}

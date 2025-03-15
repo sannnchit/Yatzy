@@ -20,6 +20,11 @@ const dice3 = document.getElementById("dice3");
 const dice4 = document.getElementById("dice4");
 const dice5 = document.getElementById("dice5");
 const roll = document.getElementById("roll");
+const player1=document.querySelectorAll(".player1");
+const player2=document.querySelectorAll(".player2");
+const player3=document.querySelectorAll(".player3");
+const player4=document.querySelectorAll(".player4");
+const dicebuttons=document.querySelectorAll(".dicebuttons");
 
 function sumof1(arr){
     const count= arr.filter(num => num===1).length;
@@ -82,32 +87,147 @@ function sumoffivecomb(arr){
     }
     return 0;
 }
-let dicearr=[];
-let fixarr=[false,false,false,false,false];
-
-for (let i=0;i<3;i++){
-    function rolldice(dicearr){
-        for (let i=0; i<5; i++){
-            if (!fixarr[i]){
-                dicearr[i]=Math.floor(Math.random()*6)+1;
-            }
+function diceresult(fixarr,dicearr){
+    for (let i=0; i<5; i++){
+        if (!fixarr[i]){
+            dicearr[i]=Math.floor(Math.random()*6)+1;
         }
     }
+}
+function fixdice(event){
+    if(rollcount===1 || rollcount===2){
+        switch(event.target){
+            case dice1: {
+                fixarr[0]= !fixarr[0];
+                break;
+            }
+            case dice2: {
+                fixarr[1]= !fixarr[1];
+                break;
+            }
+            case dice3: {
+                fixarr[2]= !fixarr[2];
+                break;
+            }
+            case dice4: {
+                fixarr[3]= !fixarr[3];
+                break;
+            }
+            case dice5: {
+                fixarr[4]= !fixarr[4];
+                break;
+            }       
+        }
+    }
+}
+
+dicebuttons.forEach(button=>{
+    button.addEventListener("click",fixdice);
+})
+
+let currentplayer=1;
+let playerTurns= {};
+let lockedscores= {};
+let dicearr=[];
+let fixarr=[false,false,false,false,false];
+let rollcount= 0;
+let buttonclicked=false;
+let numberOfPlayers=4;
+
+for(i=1; i<=numberOfPlayers; i++){
+    playerTurns[i]=0;
+    lockedscores[i]={};
+}
+const players={
+    1:player1,
+    2:player2,
+    3:player3,
+    4:player4
+};
+
+Object.values(players).forEach(playerbuttons=>{
+    playerbuttons.forEach(button=>{
+        button.addEventListener("click",()=>{
+            if(playerbuttons!==players[currentplayer]) return; //only currentplayer's buttons work
+            if (rollcount===1 || rollcount===2 || rollcount===3){
+                if(buttonclicked) return;
+                
+                if(lockedscores[currentplayer][button.id]!== undefined){
+                    console.log("Please pick another option!");
+                    return;
+                }
+                buttonclicked=true;
+                lockedscores[currentplayer][button.id]=button.textContent; //Locks the score of selected button
+                playerbuttons.forEach(btn=>{
+                    if(btn!== button && lockedscores[currentplayer][btn.id]===undefined){
+                        btn.textContent=0; //replaces values of unlocked buttons with 0
+                    }
+                });
+                console.log(`Player ${currentplayer} has chosen the score.`);
+                playerTurns[currentplayer]++; //increases currenplayers turn by 1
+                roll.disabled=false; //enables rolling again
+    
+                if (currentplayer === numberOfPlayers && playerTurns[currentplayer] >= 11) {
+                    console.log("Game Over! All players have completed their turns.");
+                    roll.disable=true;
+                    return;
+                }
+            
+                if (playerTurns[currentplayer] <= 11) {
+                    currentplayer++; // Move to next player
+                }
+                
+                if (currentplayer > numberOfPlayers) {
+                    currentplayer = 1; // Reset to player 1 after last player
+                }
+            
+                currentplayerbuttons=players[currentplayer];
+                dicearr=[];
+                fixarr=[false,false,false,false,false];
+                rollcount=0;
+                buttonclicked=false;
+                roll.disabled=false; //resets everything for another player's turn
+                console.log(`It's player${currentplayer}'s turn`);        };    
+        });
+    });
+});
+
+
+function rolldice (){
+    let currentplayerbuttons= players[currentplayer]; //chooses nodelist of currentplayer
+    
+    if(rollcount>=3 && !buttonclicked){
+        console.log("No more rolls left. Select a score!");
+        roll.disabled=true; //disables rolling dice after 3rd roll
+        return; //makes mandatory for user to select a button after 3rd roll 
+    }
+
+    rollcount++;
+    diceresult(fixarr,dicearr); //gets diceresults in dicearr
+    console.log(dicearr);
+    fixarr=[false,false,false,false,false];
+
     const count1=sumof1(dicearr);
     const count2=sumof2(dicearr);
     const count3=sumof3(dicearr);
     const count4=sumof4(dicearr);
     const count5=sumof5(dicearr);
     const count6=sumof6(dicearr);
-
     let countarr=[count1/1,count2/2,count3/3,count4/4,count5/5,count6/6];
-
     const sum3comb= sumofthreecomb(countarr);
     const sum4comb= sumoffourcomb(countarr);
     const sum32comb = sumofthreetwocomb(countarr);
     const sum4seq= sumoffourseq(dicearr);
     const sum5comb= sumoffivecomb(countarr);
+    
+    currentplayerbuttons.forEach((button,index) =>{
+            if(!(button.id in lockedscores[currentplayer])){
+            //updates possible scores in unlocked buttons from currentplayers nodelist
+            button.textContent=[count1,count2,count3,count4,count5,count6,sum3comb,sum4comb,sum32comb,sum4seq,sum5comb][index];
+        }
+    });
+    
 }
 
-
-
+roll.addEventListener("click",()=>rolldice());
+console.log("Game starts. Player 1's turn");

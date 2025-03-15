@@ -4,7 +4,7 @@ body{
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: hsla(0, 0%, 0%, 0.92);
+    background-color: hsla(0, 50%, 51%, 0.92);
 }
 .container{
     display:grid;
@@ -13,11 +13,12 @@ body{
     max-width: 500px;
 }
 .cells{
-    border: 2px solid rgba(153, 236, 153, 0.375);
+    border: 2px solid rgb(255, 255, 255);
     text-align:center;
     box-sizing: border-box;
     padding: 10px;
-    color: rgba(113, 235, 113, 0.375);
+    color: rgba(255, 255, 255, 0.826);
+    background-color: hsla(0, 42%, 46%, 0.92);
 }
 .dice{
     display:flex;
@@ -25,8 +26,11 @@ body{
     margin: 1rem 0;
 }
 .dicebuttons{
+    max-width: 4rem;
+    max-height: 4rem;
     padding: 1rem;
 }
 .roll{
     padding: 1rem;
+    
 }
